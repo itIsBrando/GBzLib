@@ -91,47 +91,83 @@ obj_blit::
 ; ==========================================
 ; Sets the tile number of the sprite
 ; - Parameters: `A` = sprite number, `D` = tile number
-; - Destroys: `AF`, `DE`, `HL`
+; - Destroys: `BC`, `HL`
 ; ==========================================
 obj_set_tile::
-	add a, a
-	add a, a
-	
-	ld e, a
-	ld a, d ; A=tile
-	ld d, 0
+	ld c, a
+	sla c
+	sla c
+
+	ld b, 0
 	ld hl, obj_shadow_oam + 2
-	add hl, de
+	add hl, bc
 	
-	ld [hl], a
+	ld [hl], d
 	ret
 
+	
+; ==========================================
+; Sets the tile number of the sprite
+; - Parameters: `A` = sprite number
+; - Outputs: `D` = tile number
+; - Destroys: `BC`, `HL`
+; ==========================================
+obj_get_tile::
+	ld c, a
+	sla c
+	sla c
 
+	ld b, 0
+	ld hl, obj_shadow_oam + 2
+	add hl, bc
+	
+	ld d, [hl]
+	ret
+
+	
 ; ==========================================
 ; Sets the flags byte of the sprite
 ; - Parameters: `A` = sprite number, `D` = flag
-; - Destroys: `AF`, `DE`, `HL`
+; - Destroys: `BC`, `HL`
 ; ==========================================
 obj_set_flag::
-	add a, a
-	add a, a
+	ld b, 0
+	ld c, a
+	sla c
+	sla c
 	
-	ld e, a
-	ld a, d ; A=flag
-	ld d, 0
 	ld hl, obj_shadow_oam + 3
-	add hl, de
+	add hl, bc
 	
-	ld [hl], a
+	ld [hl], d
 	ret
 
+	
+; ==========================================
+; Gets the flags byte of the sprite
+; - Parameters: `A` = sprite number
+; - Outputs: `D` = flag
+; - Destroys: `BC`, `HL`
+; ==========================================
+obj_set_flag::
+	ld b, 0
+	ld c, a
+	sla c
+	sla c
+	
+	ld hl, obj_shadow_oam + 3
+	add hl, bc
+	
+	ld d, [hl]
+	ret
 
+	
 ; ==========================================
 ; Moves a sprite to a coordinate
 ; - Parameters: `A` = sprite number, `L` = y, `H` = x
 ; - Destroys: `F`, `DE`, `HL`
 ; ==========================================
-obj_move::
+obj_set_position::
 	ld d, 0
 	ld e, a
 	sla e
@@ -145,6 +181,30 @@ obj_move::
 	ld [hl], e
 	inc hl
 	ld [hl], d
+	ret
+	
+	
+; ==========================================
+; Gets the position of a sprite
+; - Parameters: `A` = sprite number
+; - Outputs: `L` = y, `H` = x
+; - Destroys: `F`, `DE`, `HL`
+; ==========================================
+obj_get_position::
+	ld d, 0
+	ld e, a
+	sla e
+	sla e
+	
+	push hl
+	ld hl, obj_shadow_oam
+	add hl, de
+	pop de
+	
+	ld e, [hl]
+	inc hl
+	ld h, [hl]
+	ld l, e
 	ret
 
     

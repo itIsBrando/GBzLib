@@ -17,7 +17,7 @@ memcpy::
 
 ; ==========================================
 ; Sets data starting at `HL` to `A`
-; - Parameters: `BC` = count, `HL` = source
+; - Parameters: `A` = byte, `BC` = count, `HL` = source
 ; - Destroys: `AF`, `D`, `BC`, `HL`
 ; ==========================================
 memset::

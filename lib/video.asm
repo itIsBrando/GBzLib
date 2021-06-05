@@ -170,7 +170,7 @@ ENDR
 ; - Parameters: `H` = x, `L` = y
 ; - Destroys: `A`
 ; ==========================================
-bg_move:
+bg_move::
     ld a, h
     ldh [rSCX], a
     ld a, l

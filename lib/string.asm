@@ -5,7 +5,7 @@ SECTION "libSTRING", ROM0
 ; - Outputs: `none`
 ; - Destroys: `AF`, `DE`, `HL`
 ; ==========================================
-strcpy:
+strcpy::
     ld a, [hl+]
     or a
     ret z
@@ -15,21 +15,40 @@ strcpy:
     
 
 ; ==========================================
+; Gets the length of a string
+; - Parameters: `HL` = string pointer
+; - Outputs: `BC` = count
+; - Destroys: `AF`, `HL`
+; ==========================================
+strlen::
+	ld bc, 0
+.loop
+    ld a, [hl+]
+    or a
+    ret z
+	inc bc
+    jr .loop
+    
+	
+; ==========================================
 ; Compares two strings
 ; - Parameters: `DE` = string1,`HL` = string2
-; - Outputs: `Z` if strings equal 
+; - Outputs: `Z` if strings equal, `C` if string2 > string1
 ; - Destroys: `ALL`
 ; ==========================================
-strcmp:
+strcmp::
     ld a, [de]
     or a
-    jr nz, .terminator
+    jr z, .terminator
     cp [hl]
     ret nz
-    inc hl
+	ld a, [hl+]
+	or a
+	jr z, .terminator
     inc de
+	jr strcmp
 
 .terminator:
-    cp [hl]
+    inc a
     ret
     

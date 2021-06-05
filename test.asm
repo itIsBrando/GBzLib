@@ -35,7 +35,7 @@ Start:
     xor a
     ldh [rLCDC], a
 
-    ld a, 0
+	xor a
     ld b, 40
     ld de, tileset
     call bg_load_tiles
@@ -60,18 +60,19 @@ Start:
 	
 	xor a
 	ld hl, ((18+8) << 8) | LOW(5+16) ;xy
-	PRINT ((18+8) << 8) | LOW(5+16) ;xy
-	call obj_move
-	
-	xor a
-	ld d, 111
-	call obj_set_flag
+	call obj_set_position
 	
 	call obj_blit
 
     ei
 .loop:
     halt
+	xor a
+	call obj_get_position
+	inc h
+	call obj_set_position
+	
+	call obj_blit
     jr .loop
 
 
@@ -81,13 +82,16 @@ tileset:
 SECTION "vblank", ROM0[$40]
 vblank:
 	push af
+	push bc
+	push de
 	push hl
+	call obj_blit
 	ld hl, $9801
-	ld a, [hl]
-	inc a
-	ld [hl], a
-	pop hl
+	inc [hl]
 	pop af
+	pop bc
+	pop de
+	pop hl
 	reti
 	
 	
