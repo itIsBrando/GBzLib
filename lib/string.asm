@@ -5,13 +5,13 @@ SECTION "libSTRING", ROM0
 ; - Outputs: `none`
 ; - Destroys: `AF`, `DE`, `HL`
 ; ==========================================
-strcpy::
+str_copy::
     ld a, [hl+]
     or a
     ret z
     ld [de], a
     inc de
-    jr strcpy
+    jr str_copy
     
 
 ; ==========================================
@@ -20,7 +20,7 @@ strcpy::
 ; - Outputs: `BC` = count
 ; - Destroys: `AF`, `HL`
 ; ==========================================
-strlen::
+str_length::
 	ld bc, 0
 .loop
     ld a, [hl+]
@@ -36,7 +36,7 @@ strlen::
 ; - Outputs: `Z` if strings equal, `C` if string2 > string1
 ; - Destroys: `ALL`
 ; ==========================================
-strcmp::
+str_compare::
     ld a, [de]
     or a
     jr z, .terminator
@@ -46,7 +46,7 @@ strcmp::
 	or a
 	jr z, .terminator
     inc de
-	jr strcmp
+	jr str_compare
 
 .terminator:
     inc a

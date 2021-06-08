@@ -1,57 +1,6 @@
 MAX_SPRITE EQU 40
 
-;LD_IND hl, [hl]
-; Destroys: `A` ONLY IF both paras are `HL` 
-LD_IND: MACRO
-IF strcmp(strlwr("\2"), "[hl]") != 0
-    FAIL "Indirection only allowed with HL"
-ENDC
-IF strlen("\1") != 2
-	PRINTLN \1
-	PRINTLN strlen("\1")
-	FAIL "First parameter register must be 16-bit"
-ENDC
-__rp1 EQUS strsub("\1", 1, 1) ; high
-__rp2 EQUS strsub("\1", 2, 1) ; low
-
-; optimize if register != HL
-IF strcmp(strlwr("\1"), "hl") != 0
-	ld __rp2, [hl]
-	inc hl
-	ld __rp1, [hl]
-	dec hl
-ELSE
-	ld a, [hl+]
-	ld __rp1, [hl]
-	ld __rp2, a
-ENDC
-	PURGE __rp1, __rp2
-ENDM
-
-
-;STO_IND [hl], xx
-; Destroys: `A` only if both paras are `HL` 
-STO_IND: MACRO
-IF strcmp("\1", "[hl]") != 0
-    FAIL "Indirection only allowed with HL"
-ENDC
-IF strlen("\2") != 2
-	FAIL "First parameter register must be 16-bit"
-ENDC
-__rp1 EQUS strsub("\2", 1, 1) ; high
-__rp2 EQUS strsub("\2", 2, 1) ; low
-
-IF strcmp(strlwr("\2"), "hl") != 0
-	ld [hl], __rp2
-	inc hl
-	ld [hl], __rp1
-	dec hl
-ELSE
-	FAIL "What the heck dude"
-ENDC
-	PURGE __rp1, __rp2
-ENDM
-
+INCLUDE "lib/macros.inc"
     
 SECTION "libSprite", ROM0
 
@@ -149,7 +98,7 @@ obj_set_flag::
 ; - Outputs: `D` = flag
 ; - Destroys: `BC`, `HL`
 ; ==========================================
-obj_set_flag::
+obj_get_flag::
 	ld b, 0
 	ld c, a
 	sla c

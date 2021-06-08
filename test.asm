@@ -1,12 +1,5 @@
 INCLUDE "hardware.inc"
-
-cart_name: MACRO
-    db \1
-REPT 15 - strlen(\1)
-    db 0
-ENDR
-ENDM
-
+INCLUDE "lib/macros.inc"
 
 SECTION "Start", ROM0[$100]
     nop
@@ -42,12 +35,18 @@ Start:
     
     ld a, 3
     ld [$9800], a
-    
-;    BG_FILL 2, 2, 3, 3, 4
+	
     ld a, 3
     ld hl, HIGH(0) | LOW(2)
     ld bc, $0303
     call bg_fill
+	
+	; coordinate (10, 11)
+	; width: 5, height: 3
+	ld hl, ((10) << 8) | (11)
+	ld de, map
+	ld bc, ((5) << 8) | (3)
+	call bg_draw_tiles
     
     call bg_init
 
@@ -66,32 +65,37 @@ Start:
 
     ei
 .loop:
-    halt
-	xor a
-	call obj_get_position
-	inc h
-	call obj_set_position
+	halt
+	call btn_scan
+	
+	bit PADB_RIGHT, a
+	call nz, moveRight
 	
 	call obj_blit
     jr .loop
 
+	
+moveRight:
+	xor a
+	call obj_get_position
+	inc h
+	jp obj_set_position
+	
+map:
+	db 1,2,3,4,5
+	db 1,2,3,4,5
+	db 2,3,4,5,1
 
 tileset:
     INCBIN "tiles.2bpp"
 
 SECTION "vblank", ROM0[$40]
 vblank:
-	push af
-	push bc
-	push de
-	push hl
+	pushl af, bc, de, hl
 	call obj_blit
 	ld hl, $9801
 	inc [hl]
-	pop af
-	pop bc
-	pop de
-	pop hl
+	popl hl, de, bc, af
 	reti
 	
 	

@@ -34,7 +34,7 @@ rev_Check_hardware_inc: MACRO
         ENDC
         ENDM
 
-_HW	EQU $FF00
+_HW     EQU $FF00
 
 _VRAM         EQU  $8000 ; $8000->$A000
 _SCRN0        EQU  $9800 ; $9800->$9BFF
@@ -714,6 +714,10 @@ PADB_START      EQU     $3
 PADB_SELECT     EQU     $2
 PADB_B          EQU     $1
 PADB_A          EQU     $0
+
+P1F_GET_DPAD EQU P1F_5
+P1F_GET_BTN  EQU P1F_4
+P1F_GET_NONE EQU P1F_4 | P1F_5
 
 ;***************************************************************************
 ;*

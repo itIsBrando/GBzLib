@@ -176,3 +176,48 @@ bg_move::
     ld a, l
     ldh [rSCY], a
     ret
+	
+
+; ==========================================
+; Loads a map given a pointer
+; - Parameters: `H` = x, `L` = y, `DE` = map pointer, `B` = width, `C` = height
+; - Destroys: `All`
+; ==========================================
+bg_draw_tiles::
+	push de
+	
+	ld d, $98
+	ld e, h ; $9800 + x
+	ld h, 0
+REPT 5
+	add hl, hl
+ENDR
+	
+	add hl, de
+	
+	pop de
+	
+	; VRAM = HL
+	; MAP = DE
+
+.loopY:
+	push bc
+	push hl
+.loopX:
+	call vid_vram_readable
+	ld a, [de]
+	ld [hl+], a
+	inc de
+	dec b
+	jr nz, .loopX
+
+	pop hl
+	ld bc, 32
+	add hl, bc
+	
+	pop bc
+	
+	dec c
+	jr nz, .loopY
+	
+	ret

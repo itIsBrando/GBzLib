@@ -1,8 +1,19 @@
-LIB_FILES = video sprite
+LIB_FILES = video sprite joypad
 
 SOURCE_FILES = $(wildcard *.asm)
+	
+	
+# Don't touch varibles down here
+
 OFILES = $(foreach dir, $(basename $(SOURCE_FILES)), $(dir).o) \
-	$(addsuffix .o, $(LIB_FILES))
+$(addsuffix .o, $(LIB_FILES))
+
+
+define NEWLINE
+
+endef
+
+LIB_ASM = $(wildcard lib/*.asm)
 
 test.gb : $(addsuffix .o, $(basename $(SOURCE_FILES)))
 	@rgblink -o test.gb $(foreach dir, $(OFILES), build/$(dir))
@@ -20,10 +31,8 @@ test:
 	@echo Sources: $(SOURCE_FILES)
 
 # build library files
-lib: lib/video.asm lib/memory.asm lib/sprite.asm
-	@rgbasm -o build/video.o lib/video.asm
-	@rgbasm -o build/sprite.o lib/sprite.asm
-	@rgbasm -o build/memory.o lib/memory.asm 
+lib: $(LIB_ASM)
+	@$(foreach dir, $(LIB_ASM), rgbasm -o build/$(notdir $(basename $(dir))).o lib/$(basename $(notdir $(dir))).asm;)
 	@echo Assembled libraries.
 
 img:
