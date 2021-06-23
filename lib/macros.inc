@@ -55,7 +55,7 @@ ENDM
 ; Creates an enumeration
 enum: MACRO
 FOR V,_NARG
-\1 EQU V-1
+\1 EQU V
 SHIFT
 ENDR
 ENDM

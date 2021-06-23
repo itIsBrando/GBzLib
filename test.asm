@@ -44,7 +44,7 @@ Start:
 	; coordinate (10, 11)
 	; width: 5, height: 3
 	ld hl, ((10) << 8) | (11)
-	ld de, map
+	ld de, 0
 	ld bc, ((5) << 8) | (3)
 	call bg_draw_tiles
     
@@ -80,11 +80,6 @@ moveRight:
 	call obj_get_position
 	inc h
 	jp obj_set_position
-	
-map:
-	db 1,2,3,4,5
-	db 1,2,3,4,5
-	db 2,3,4,5,1
 
 tileset:
     INCBIN "tiles.2bpp"

@@ -1,6 +1,7 @@
 MAX_SPRITE EQU 40
 
 INCLUDE "lib/macros.inc"
+INCLUDE "hardware.inc"
     
 SECTION "libSprite", ROM0
 
@@ -16,26 +17,38 @@ obj_init::
     ld [hl+], a
     dec b
     jr nz, .loop
+
+	; copy over DMA routine
+	ld hl, dma_routine
+	ld de, _HRAM
+	ld b, dma_routine_end - dma_routine
+.loop2:
+	ld a, [hl+]
+	ld [de], a
+	inc de
+	dec b
+	jr nz, .loop2
     ret
 
 
 ; ==========================================
 ; Copies sprites from shadow OAM to the real OAM
-; - Destroys: `AF`, `B`, `DE`, `HL`
+; - Destroys: `AF`
 ; ==========================================
 obj_blit::
-	ld hl, obj_shadow_oam
-	ld de, $FE00
-	ld b, MAX_SPRITE * 4
-.loop:
-	call vid_vram_readable
-	ld a, [hl+]
-	ld [de], a
-	inc de
-	dec b
-	jr nz, .loop
-	ret
+	jp obj_hram
 
+
+; this routine gets copied to HRAM
+dma_routine:
+	ld a, HIGH(obj_shadow_oam)
+	ldh [$FF46], a
+	ld a, MAX_SPRITE
+.wait:
+	dec a
+	jr nz, .wait
+	ret
+dma_routine_end:
 
 ; ==========================================
 ; Sets the tile number of the sprite
@@ -158,6 +171,7 @@ obj_get_position::
 
     
 SECTION "libSpriteRAM", WRAM0
+
 obj_shadow_oam:
     ds 4 * MAX_SPRITE
     
@@ -166,3 +180,8 @@ endWRAM:
     
 sizeofRAM EQU endWRAM - obj_shadow_oam
 PRINTLN "sprite.asm uses {sizeofRAM} bytes of WRAM0."
+
+SECTION "wram", HRAM
+
+obj_hram:
+	ds dma_routine_end - dma_routine
