@@ -1,5 +1,7 @@
 # zLib for Gameboy
 
+### Note: This is no longer being maintained by me and was never fully functional or stable. As a result, it is being archived.
+
 ### A very basic library for original Gameboy
 
  - Basic background & sprite support.
